@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stopwatch</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    #stopwatch {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    #controls {
+        margin-bottom: 20px;
+    }
+
+    #lapTimes {
+        text-align: left;
+        margin: 0 auto;
+        max-width: 300px;
+    }
+
+    #lapTimes ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    #lapTimes li {
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<h1>Stopwatch</h1>
+<div id="stopwatch">00:00:00</div>
+<div id="controls">
+    <button id="startButton">Start</button>
+    <button id="pauseButton">Pause</button>
+    <button id="resetButton">Reset</button>
+</div>
+<div id="lapTimes">
+    <h2>Lap Times</h2>
+    <ul id="lapList"></ul>
+</div>
+
+<script>
+    let startTime;
+    let elapsedTime = 0;
+    let timerInterval;
+
+    const stopwatchDisplay = document.getElementById('stopwatch');
+    const startButton = document.getElementById('startButton');
+    const pauseButton = document.getElementById('pauseButton');
+    const resetButton = document.getElementById('resetButton');
+    const lapList = document.getElementById('lapList');
+
+    function startTimer() {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(updateTime, 10);
+        startButton.disabled = true;
+        pauseButton.disabled = false;
+    }
+
+    function pauseTimer() {
+        clearInterval(timerInterval);
+        startButton.disabled = false;
+        pauseButton.disabled = true;
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        elapsedTime = 0;
+        updateDisplay();
+        startButton.disabled = false;
+        pauseButton.disabled = false;
+    }
+
+    function updateTime() {
+        const currentTime = Date.now();
+        elapsedTime = currentTime - startTime;
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        const milliseconds = Math.floor((elapsedTime % 1000) / 10);
+        const seconds = Math.floor((elapsedTime / 1000) % 60);
+        const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+        const hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
+
+        stopwatchDisplay.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${pad(milliseconds)}`;
+    }
+
+    function pad(number) {
+        return number < 10 ? '0' + number : number;
+    }
+
+    function addLap() {
+        const lapTime = stopwatchDisplay.textContent;
+        const lapItem = document.createElement('li');
+        lapItem.textContent = lapTime;
+        lapList.appendChild(lapItem);
+    }
+
+    startButton.addEventListener('click', startTimer);
+    pauseButton.addEventListener('click', pauseTimer);
+    resetButton.addEventListener('click', resetTimer);
+</script>
+</body>
+</html>
